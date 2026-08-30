@@ -1,0 +1,155 @@
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "radio-battery-monitor"
+version = "0.1.0"
+description = "A Windows dashboard for Bluetooth LE and ANT+ battery telemetry."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "Proprietary" }
+authors = [{ name = "Nick" }]
+dependencies = [
+    "bleak==3.0.2",
+    "openant==1.3.4",
+    "pyusb==1.3.1",
+]
+
+[project.gui-scripts]
+radio-battery-monitor = "radio_battery_monitor.__main__:main"
+
+[dependency-groups]
+dev = [
+    "mypy==2.1.0",
+    "pyinstaller==6.22.2",
+    "pyright==1.1.411",
+    "pytest==9.1.1",
+    "ruff==0.15.20",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/radio_battery_monitor"]
+
+[tool.ruff]
+cache-dir = ".cache/.ruff_cache"
+extend-exclude = ["build", "coverage", "dist", "typings"]
+force-exclude = true
+line-length = 120
+required-version = ">=0.15.20"
+respect-gitignore = true
+show-fixes = true
+src = ["src", "tests"]
+target-version = "py312"
+
+[tool.ruff.analyze]
+detect-string-imports = true
+direction = "dependencies"
+type-checking-imports = true
+
+[tool.ruff.format]
+docstring-code-format = true
+line-ending = "lf"
+quote-style = "double"
+
+[tool.ruff.lint]
+fixable = ["ALL"]
+ignore = [
+    "COM812", # Conflicts with the formatter.
+    "D203",   # Incompatible with D211.
+    "D213",   # Incompatible with D212.
+    "ISC001", # Conflicts with the formatter.
+]
+select = ["ALL"]
+unfixable = ["ERA", "F401"]
+
+[tool.ruff.lint.flake8-type-checking]
+strict = true
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "S101", # pytest uses assert rewriting.
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+cache_dir = ".cache/.mypy_cache"
+disallow_any_decorated = true
+disallow_any_unimported = true
+enable_error_code = [
+    "deprecated",
+    "explicit-override",
+    "ignore-without-code",
+    "mutable-override",
+    "possibly-undefined",
+    "redundant-expr",
+    "truthy-bool",
+    "truthy-iterable",
+    "unused-awaitable",
+]
+files = ["src", "tests"]
+junit_xml = "coverage/mypy/junit.xml"
+mypy_path = "typings"
+python_version = "3.12"
+strict = true
+strict_bytes = true
+strict_equality = true
+strict_equality_for_none = true
+warn_incomplete_stub = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+[tool.pyright]
+analyzeUnannotatedFunctions = true
+deprecateTypingAliases = true
+disableBytesTypePromotions = true
+enableReachabilityAnalysis = true
+exclude = [
+    "**/.*",
+    "**/.cache",
+    "**/.venv",
+    "**/__pycache__",
+    "**/build",
+    "**/coverage",
+    "**/dist",
+]
+extraPaths = ["src", "typings"]
+include = ["src", "tests"]
+pythonPlatform = "Windows"
+pythonVersion = "3.12"
+reportImplicitOverride = true
+reportMissingTypeStubs = "error"
+reportUnnecessaryTypeIgnoreComment = true
+reportUnknownArgumentType = "error"
+reportUnknownLambdaType = "error"
+reportUnknownMemberType = "error"
+reportUnknownParameterType = "error"
+reportUnknownVariableType = "error"
+reportUnusedCallResult = true
+strictDictionaryInference = true
+strictListInference = true
+strictSetInference = true
+typeCheckingMode = "strict"
+useLibraryCodeForTypes = true
+
+[tool.pytest.ini_options]
+addopts = ["--strict-config", "--strict-markers", "--import-mode=importlib"]
+cache_dir = ".cache/.pytest_cache"
+filterwarnings = ["error"]
+junit_duration_report = "call"
+junit_family = "xunit2"
+junit_logging = "log"
+junit_log_passing_tests = true
+junit_suite_name = "radio-battery-monitor"
+strict = true
+strict_config = true
+strict_markers = true
+strict_parametrization_ids = true
+strict_xfail = true
+testpaths = ["tests"]
+
