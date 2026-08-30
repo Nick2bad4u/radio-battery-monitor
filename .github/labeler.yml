@@ -25,7 +25,7 @@ build:
                 - "pyproject.toml"
                 - "uv.lock"
 
-ci:
+CI/CD:
     - changed-files:
           - any-glob-to-any-file:
                 - ".github/workflows/**"
@@ -72,7 +72,7 @@ settings:
                 - "src/radio_battery_monitor/settings.py"
                 - "tests/test_settings.py"
 
-tests:
+testing:
     - changed-files:
           - any-glob-to-any-file:
                 - "tests/**"
