@@ -1,0 +1,86 @@
+# yaml-language-server: $schema=https://www.schemastore.org/pull-request-labeler.json
+
+ant+:
+    - changed-files:
+          - any-glob-to-any-file:
+                - "src/radio_battery_monitor/backends/ant.py"
+                - "tests/test_ant.py"
+                - "typings/openant/**"
+
+bluetooth:
+    - changed-files:
+          - any-glob-to-any-file:
+                - "src/radio_battery_monitor/backends/ble.py"
+                - "tests/test_ble.py"
+
+bug:
+    - head-branch:
+          - "^(?:bug|fix|hotfix|patch)/"
+
+build:
+    - changed-files:
+          - any-glob-to-any-file:
+                - ".python-version"
+                - "RadioBatteryMonitor.spec"
+                - "pyproject.toml"
+                - "uv.lock"
+
+ci:
+    - changed-files:
+          - any-glob-to-any-file:
+                - ".github/workflows/**"
+
+configuration:
+    - changed-files:
+          - any-glob-to-any-file:
+                - ".gitattributes"
+                - ".gitignore"
+                - ".github/*.yml"
+                - ".github/*.yaml"
+                - ".vscode/**"
+
+dependencies:
+    - changed-files:
+          - any-glob-to-any-file:
+                - "pyproject.toml"
+                - "uv.lock"
+
+documentation:
+    - changed-files:
+          - any-glob-to-any-file:
+                - "**/*.md"
+                - "LICENSE"
+
+feature:
+    - head-branch:
+          - "^(?:enhancement|feat|feature|improve)/"
+
+python:
+    - changed-files:
+          - any-glob-to-any-file:
+                - "src/**/*.py"
+                - "tests/**/*.py"
+                - "typings/**/*.pyi"
+
+security:
+    - head-branch:
+          - "^(?:cve|security|vuln|vulnerability)/"
+
+settings:
+    - changed-files:
+          - any-glob-to-any-file:
+                - "src/radio_battery_monitor/settings.py"
+                - "tests/test_settings.py"
+
+tests:
+    - changed-files:
+          - any-glob-to-any-file:
+                - "tests/**"
+
+ui:
+    - changed-files:
+          - any-glob-to-any-file:
+                - "src/radio_battery_monitor/theme.py"
+                - "src/radio_battery_monitor/ui.py"
+                - "tests/test_theme.py"
+                - "tests/test_ui_formatting.py"

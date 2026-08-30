@@ -1,5 +1,8 @@
 # Radio Battery Monitor
 
+[![CI](https://github.com/Nick2bad4u/radio-battery-monitor/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Nick2bad4u/radio-battery-monitor/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Radio Battery Monitor is a local Windows 11 dashboard for battery telemetry from selected Bluetooth Low Energy (BLE)
 and ANT+ fitness devices. It checks the Windows Bluetooth radio and a Dynastream ANT USB Stick 2 (`0FCF:1008`),
 discovers nearby devices, lets several radio identities be linked to one physical device, and refreshes reported
@@ -106,6 +109,9 @@ Launch `dist\RadioBatteryMonitor\RadioBatteryMonitor.exe`. A one-folder build is
 less prone to native BLE/USB dependency extraction issues than a one-file executable. The build is unsigned, so
 Windows reputation warnings are possible when it is copied to another PC.
 
+GitHub Actions runs the complete quality gate on Windows and uploads the one-folder build as a short-lived workflow
+artifact. These CI artifacts are development builds, not signed releases.
+
 ## Troubleshooting
 
 - **ANT stick ready, then in use:** ANT USB access is exclusive. Close every ANT-aware app, including Zwift and
@@ -121,3 +127,7 @@ Windows reputation warnings are possible when it is copied to another PC.
 - **Duplicate rows:** link the BLE and ANT+ observations to the same existing logical device rather than creating a
   second device. One product may legitimately advertise several ANT+ profiles; for example, fitness-equipment and
   bicycle-power rows with the same ANT device number should normally be linked to the same trainer.
+
+## License
+
+Radio Battery Monitor is available under the [MIT License](LICENSE).

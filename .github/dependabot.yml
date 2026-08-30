@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://www.schemastore.org/dependabot-2.0.json
+version: 2
+
+updates:
+    - package-ecosystem: "uv"
+      directory: "/"
+      schedule:
+          interval: "monthly"
+          time: "05:30"
+          timezone: "America/Detroit"
+      assignees:
+          - "Nick2bad4u"
+      target-branch: "main"
+      rebase-strategy: "auto"
+      open-pull-requests-limit: 10
+      commit-message:
+          prefix: "⬆️ [build]"
+          include: "scope"
+      labels:
+          - "dependencies"
+          - "python"
+      groups:
+          python-dependencies:
+              patterns:
+                  - "*"
+
+    - package-ecosystem: "github-actions"
+      directory: "/"
+      schedule:
+          interval: "monthly"
+          time: "05:45"
+          timezone: "America/Detroit"
+      assignees:
+          - "Nick2bad4u"
+      target-branch: "main"
+      rebase-strategy: "auto"
+      open-pull-requests-limit: 10
+      commit-message:
+          prefix: "👷 [ci]"
+          include: "scope"
+      labels:
+          - "dependencies"
+          - "github-actions"
+      groups:
+          github-actions:
+              patterns:
+                  - "*"

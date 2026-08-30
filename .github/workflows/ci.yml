@@ -1,0 +1,88 @@
+# yaml-language-server: $schema=https://www.schemastore.org/github-workflow.json
+
+name: "CI"
+
+run-name: >-
+    ${{
+        github.event_name == 'pull_request' &&
+        format('CI #{0}', github.event.pull_request.number) ||
+        format('CI {0}', github.ref_name || github.run_id)
+    }}
+
+on:
+    push:
+        branches:
+            - "main"
+    pull_request:
+        branches:
+            - "main"
+    workflow_dispatch:
+
+permissions:
+    contents: "read"
+
+concurrency:
+    group: "ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
+    cancel-in-progress: true
+
+jobs:
+    quality-and-package:
+        name: "Quality and package"
+        runs-on: "windows-latest"
+        timeout-minutes: 30
+
+        steps:
+            - name: "Checkout"
+              uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7.0.1
+
+            - name: "Set up uv and Python"
+              uses: "astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d" # v10.0.1
+              with:
+                  version: "0.12.2"
+                  python-version: "3.12"
+                  enable-cache: true
+                  cache-dependency-glob: "uv.lock"
+
+            - name: "Install locked dependencies"
+              run: "uv sync --frozen"
+
+            - name: "Validate lockfile"
+              run: "uv lock --check"
+
+            - name: "Check formatting"
+              run: "uv run ruff format --check src tests"
+
+            - name: "Lint"
+              run: "uv run ruff check src tests"
+
+            - name: "Type-check with mypy"
+              run: "uv run mypy"
+
+            - name: "Type-check with Pyright"
+              run: "uv run pyright"
+
+            - name: "Run tests"
+              run: "uv run pytest"
+
+            - name: "Compile Python sources"
+              run: "uv run python -m compileall -q src tests"
+
+            - name: "Build one-folder application"
+              run: "uv run pyinstaller --noconfirm --clean RadioBatteryMonitor.spec"
+
+            - name: "Verify packaged executable"
+              shell: "pwsh"
+              run: |
+                  $executable = "dist/RadioBatteryMonitor/RadioBatteryMonitor.exe"
+                  if (-not (Test-Path -LiteralPath $executable -PathType Leaf)) {
+                      throw "Expected packaged executable was not created: $executable"
+                  }
+                  Get-Item -LiteralPath $executable | Select-Object FullName, Length
+
+            - name: "Upload Windows application"
+              uses: "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a" # v7.0.1
+              with:
+                  name: "RadioBatteryMonitor-windows-x64-${{ github.sha }}"
+                  path: "dist/RadioBatteryMonitor/"
+                  if-no-files-found: "error"
+                  retention-days: 14

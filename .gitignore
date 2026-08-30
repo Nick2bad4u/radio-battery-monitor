@@ -1,11 +1,20 @@
 .cache/
+.coverage
+.coverage.*
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
 .venv/
 __pycache__/
+*.egg-info/
+*.log
 *.py[cod]
 build/
 coverage/
 dist/
-*.egg-info/
+htmlcov/
+
+# IDE and operating-system files not shared by the project.
+.idea/
+.DS_Store
+Thumbs.db

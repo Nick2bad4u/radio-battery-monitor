@@ -8,8 +8,18 @@ version = "0.1.0"
 description = "A Windows dashboard for Bluetooth LE and ANT+ battery telemetry."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
-license = { text = "Proprietary" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{ name = "Nick" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Win32 (MS Windows)",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Typing :: Typed",
+]
 dependencies = [
     "bleak==3.0.2",
     "openant==1.3.4",
@@ -18,6 +28,11 @@ dependencies = [
 
 [project.gui-scripts]
 radio-battery-monitor = "radio_battery_monitor.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/Nick2bad4u/radio-battery-monitor"
+Issues = "https://github.com/Nick2bad4u/radio-battery-monitor/issues"
+Repository = "https://github.com/Nick2bad4u/radio-battery-monitor"
 
 [dependency-groups]
 dev = [
@@ -138,7 +153,12 @@ typeCheckingMode = "strict"
 useLibraryCodeForTypes = true
 
 [tool.pytest.ini_options]
-addopts = ["--strict-config", "--strict-markers", "--import-mode=importlib"]
+addopts = [
+    "--basetemp=.cache/pytest-temp",
+    "--strict-config",
+    "--strict-markers",
+    "--import-mode=importlib",
+]
 cache_dir = ".cache/.pytest_cache"
 filterwarnings = ["error"]
 junit_duration_report = "call"
@@ -152,4 +172,3 @@ strict_markers = true
 strict_parametrization_ids = true
 strict_xfail = true
 testpaths = ["tests"]
-
