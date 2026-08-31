@@ -74,7 +74,7 @@ class DeviceIdentity:
 
     @property
     def key(self) -> str:
-        """Return a stable key suitable for mappings and events."""
+        """A stable key suitable for mappings and events."""
         return f"{self.protocol.value}:{self.identifier}:{self.device_type}"
 
 
@@ -103,7 +103,11 @@ class BatteryReading:
     battery_count: int | None = None
 
     def __post_init__(self) -> None:
-        """Reject malformed readings at the protocol boundary."""
+        """Reject malformed readings at the protocol boundary.
+
+        Raises:
+            ValueError: A percentage, voltage, or operating time is outside its valid range.
+        """
         if self.percent is not None and not 0 <= self.percent <= MAX_BATTERY_PERCENT:
             msg = "Battery percentage must be between 0 and 100."
             raise ValueError(msg)

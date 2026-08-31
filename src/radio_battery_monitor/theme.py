@@ -64,7 +64,11 @@ def palette_for(theme: ThemeMode) -> Palette:
 
 
 def apply_theme(root: tk.Tk, theme: ThemeMode) -> Palette:
-    """Apply an accessible application-wide ttk theme and return its palette."""
+    """Apply an accessible application-wide ttk theme.
+
+    Returns:
+        The semantic palette applied to the application.
+    """
     palette = palette_for(theme)
     _ = root.configure(background=palette.background)
     style = ttk.Style(root)
@@ -159,7 +163,11 @@ def apply_theme(root: tk.Tk, theme: ThemeMode) -> Palette:
 
 
 def create_app_icon(root: tk.Misc, palette: Palette) -> tk.PhotoImage:
-    """Create a small battery/radio icon without shipping an opaque binary asset."""
+    """Create a small battery/radio icon without shipping an opaque binary asset.
+
+    Returns:
+        The generated Tk image.
+    """
     icon = tk.PhotoImage(master=root, width=32, height=32)
     icon.put(palette.background, to=(0, 0, 32, 32))
     icon.put(palette.accent, to=(4, 7, 26, 25))

@@ -25,7 +25,7 @@ class MonitorController:
 
     @property
     def running(self) -> bool:
-        """Return whether a monitoring session is active."""
+        """Whether a monitoring session is active."""
         with self._lifecycle_lock:
             return self._running
 
@@ -35,7 +35,11 @@ class MonitorController:
             self._settings = settings
 
     def probe(self) -> tuple[AdapterStatus, ...]:
-        """Probe every backend and return their independent states."""
+        """Probe every backend without opening a monitoring session.
+
+        Returns:
+            The independent state of each configured radio backend.
+        """
         return tuple(backend.probe() for backend in self._backends)
 
     def start(self) -> None:

@@ -1,174 +1,433 @@
-[build-system]
-requires = ["hatchling>=1.27.0"]
-build-backend = "hatchling.build"
+#:schema https://www.schemastore.org/pyproject.json
 
 [project]
-name = "radio-battery-monitor"
-version = "0.1.0"
-description = "A Windows dashboard for Bluetooth LE and ANT+ battery telemetry."
-readme = "README.md"
-requires-python = ">=3.12,<3.13"
-license = "MIT"
-license-files = ["LICENSE"]
-authors = [{ name = "Nick" }]
-classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Environment :: Win32 (MS Windows)",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: Microsoft :: Windows :: Windows 11",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.12",
-    "Typing :: Typed",
-]
-dependencies = [
-    "bleak==3.0.2",
-    "openant==1.3.4",
-    "pyusb==1.3.1",
-]
+    name            = "radio-battery-monitor"
+    version         = "0.1.0"
+    description     = "A Windows dashboard for Bluetooth LE and ANT+ battery telemetry."
+    readme          = "README.md"
+    requires-python = ">=3.12,<3.13"
+    license         = "MIT"
+    license-files   = [ "LICENSE" ]
+    authors         = [ { name = "Nick" } ]
+    classifiers     = [
+        "Development Status :: 3 - Alpha",
+        "Environment :: Win32 (MS Windows)",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: Microsoft :: Windows :: Windows 11",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.12",
+        "Typing :: Typed",
+    ]
+    dependencies    = [
+        "bleak==3.0.2",
+        "openant==1.3.4",
+        "pyusb==1.3.1",
+    ]
 
-[project.gui-scripts]
-radio-battery-monitor = "radio_battery_monitor.__main__:main"
+    [project.urls]
+        Homepage   = "https://github.com/Nick2bad4u/radio-battery-monitor"
+        Issues     = "https://github.com/Nick2bad4u/radio-battery-monitor/issues"
+        Repository = "https://github.com/Nick2bad4u/radio-battery-monitor"
 
-[project.urls]
-Homepage = "https://github.com/Nick2bad4u/radio-battery-monitor"
-Issues = "https://github.com/Nick2bad4u/radio-battery-monitor/issues"
-Repository = "https://github.com/Nick2bad4u/radio-battery-monitor"
+    [project.gui-scripts]
+        radio-battery-monitor = "radio_battery_monitor.__main__:main"
 
 [dependency-groups]
-dev = [
-    "mypy==2.1.0",
-    "pyinstaller==6.22.2",
-    "pyright==1.1.411",
-    "pytest==9.1.1",
-    "ruff==0.15.20",
-]
+    dev = [
+        "coverage==7.16.0",
+        "lxml==6.1.2",
+        "mypy==2.3.1",
+        "pip-audit==2.10.1",
+        "pyinstaller==6.22.2",
+        "pyright==1.1.411",
+        "pytest==9.1.1",
+        "pytest-cov==7.1.0",
+        "ruff==0.16.5",
+        "validate-pyproject-schema-store[all,validate-pyproject]==2026.8.29",
+    ]
+
+[build-system]
+    requires      = [ "hatchling==1.32.0" ]
+    build-backend = "hatchling.build"
+
+[tool.coverage.run]
+    branch         = true
+    omit           = [
+        "**/tests/**",
+        "**/test_*.py",
+        "**/*_test.py",
+        "tests/**",
+    ]
+    patch          = [ "subprocess" ]
+    relative_files = true
+    source_dirs    = [ "src" ]
+
+[tool.coverage.report]
+    fail_under   = 75
+    precision    = 2
+    show_missing = true
+    skip_covered = false
+
+[tool.coverage.xml]
+    output = "coverage/python/coverage.xml"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/radio_battery_monitor"]
-
-[tool.ruff]
-cache-dir = ".cache/.ruff_cache"
-extend-exclude = ["build", "coverage", "dist", "typings"]
-force-exclude = true
-line-length = 120
-required-version = ">=0.15.20"
-respect-gitignore = true
-show-fixes = true
-src = ["src", "tests"]
-target-version = "py312"
-
-[tool.ruff.analyze]
-detect-string-imports = true
-direction = "dependencies"
-type-checking-imports = true
-
-[tool.ruff.format]
-docstring-code-format = true
-line-ending = "lf"
-quote-style = "double"
-
-[tool.ruff.lint]
-fixable = ["ALL"]
-ignore = [
-    "COM812", # Conflicts with the formatter.
-    "D203",   # Incompatible with D211.
-    "D213",   # Incompatible with D212.
-    "ISC001", # Conflicts with the formatter.
-]
-select = ["ALL"]
-unfixable = ["ERA", "F401"]
-
-[tool.ruff.lint.flake8-type-checking]
-strict = true
-
-[tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = [
-    "S101", # pytest uses assert rewriting.
-]
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
+    packages = [ "src/radio_battery_monitor" ]
 
 [tool.mypy]
-cache_dir = ".cache/.mypy_cache"
-disallow_any_decorated = true
-disallow_any_unimported = true
-enable_error_code = [
-    "deprecated",
-    "explicit-override",
-    "ignore-without-code",
-    "mutable-override",
-    "possibly-undefined",
-    "redundant-expr",
-    "truthy-bool",
-    "truthy-iterable",
-    "unused-awaitable",
-]
-files = ["src", "tests"]
-junit_xml = "coverage/mypy/junit.xml"
-mypy_path = "typings"
-python_version = "3.12"
-strict = true
-strict_bytes = true
-strict_equality = true
-strict_equality_for_none = true
-warn_incomplete_stub = true
-warn_redundant_casts = true
-warn_return_any = true
-warn_unreachable = true
-warn_unused_configs = true
-warn_unused_ignores = true
+    allow_redefinition       = false
+    cache_dir                = ".cache/.mypy_cache"
+    color_output             = true
+    disallow_any_decorated   = true
+    disallow_any_explicit    = true
+    disallow_any_unimported  = true
+    enable_error_code        = [
+        "deprecated",
+        "exhaustive-match",
+        "explicit-override",
+        "ignore-without-code",
+        "mutable-override",
+        "possibly-undefined",
+        "redundant-expr",
+        "redundant-self",
+        "truthy-bool",
+        "truthy-iterable",
+        "unimported-reveal",
+        "unused-awaitable",
+    ]
+    exclude                  = '''(?x)(
+        (^|/)\.bzr/
+        | (^|/)\.cache/
+        | (^|/)\.git/
+        | (^|/)\.hg/
+        | (^|/)\.mypy_cache/
+        | (^|/)\.nox/
+        | (^|/)\.pytest_cache/
+        | (^|/)\.ruff_cache/
+        | (^|/)\.svn/
+        | (^|/)\.tox/
+        | (^|/)\.venv/
+        | (^|/)__pycache__/
+        | (^|/)__pypackages__/
+        | (^|/)build/
+        | (^|/)coverage/
+        | (^|/)dist/
+        | (^|/)env/
+        | (^|/)htmlcov/
+        | (^|/)node_modules/
+        | (^|/)site-packages/
+        | (^|/)third_party/
+        | (^|/)tmp/
+        | (^|/)vendor/
+        | (^|/)venv/
+    )'''
+    exclude_gitignore        = true
+    files                    = [ "src", "tests" ]
+    incremental              = true
+    junit_xml                = "coverage/mypy/junit.xml"
+    local_partial_types      = true
+    mypy_path                = "typings"
+    no_implicit_optional     = true
+    no_implicit_reexport     = true
+    pretty                   = true
+    python_version           = "3.12"
+    show_column_numbers      = true
+    show_error_code_links    = true
+    show_error_context       = true
+    strict                   = true
+    strict_bytes             = true
+    strict_equality          = true
+    strict_equality_for_none = true
+    strict_optional          = true
+    warn_incomplete_stub     = true
+    warn_no_return           = true
+    warn_redundant_casts     = true
+    warn_return_any          = true
+    warn_unreachable         = true
+    warn_unused_configs      = true
+    warn_unused_ignores      = true
 
 [tool.pyright]
-analyzeUnannotatedFunctions = true
-deprecateTypingAliases = true
-disableBytesTypePromotions = true
-enableReachabilityAnalysis = true
-exclude = [
-    "**/.*",
-    "**/.cache",
-    "**/.venv",
-    "**/__pycache__",
-    "**/build",
-    "**/coverage",
-    "**/dist",
-]
-extraPaths = ["src", "typings"]
-include = ["src", "tests"]
-pythonPlatform = "Windows"
-pythonVersion = "3.12"
-reportImplicitOverride = true
-reportMissingTypeStubs = "error"
-reportUnnecessaryTypeIgnoreComment = true
-reportUnknownArgumentType = "error"
-reportUnknownLambdaType = "error"
-reportUnknownMemberType = "error"
-reportUnknownParameterType = "error"
-reportUnknownVariableType = "error"
-reportUnusedCallResult = true
-strictDictionaryInference = true
-strictListInference = true
-strictSetInference = true
-typeCheckingMode = "strict"
-useLibraryCodeForTypes = true
+    analyzeUnannotatedFunctions         = true
+    deprecateTypingAliases              = true
+    disableBytesTypePromotions          = true
+    enableReachabilityAnalysis          = true
+    enableTypeIgnoreComments            = true
+    exclude                             = [
+        "**/.*",
+        "**/.bzr",
+        "**/.cache",
+        "**/.git",
+        "**/.hg",
+        "**/.mypy_cache",
+        "**/.nox",
+        "**/.pytest_cache",
+        "**/.ruff_cache",
+        "**/.svn",
+        "**/.tox",
+        "**/.venv",
+        "**/__pycache__",
+        "**/__pypackages__",
+        "**/build",
+        "**/coverage",
+        "**/dist",
+        "**/env",
+        "**/htmlcov",
+        "**/node_modules",
+        "**/site-packages",
+        "**/third_party",
+        "**/tmp",
+        "**/vendor",
+        "**/venv",
+    ]
+    extraPaths                          = [ "src", "typings" ]
+    include                             = [ "src", "tests" ]
+    pythonPlatform                      = "Windows"
+    pythonVersion                       = "3.12"
+    reportAbstractUsage                 = true
+    reportArgumentType                  = true
+    reportAssertAlwaysTrue              = true
+    reportAssertTypeFailure             = true
+    reportAssignmentType                = true
+    reportAttributeAccessIssue          = true
+    reportCallInDefaultInitializer      = true
+    reportCallIssue                     = true
+    reportConstantRedefinition          = true
+    reportDeprecated                    = true
+    reportDuplicateImport               = true
+    reportFunctionMemberAccess          = true
+    reportGeneralTypeIssues             = true
+    reportImplicitOverride              = true
+    reportImplicitStringConcatenation   = true
+    reportImportCycles                  = true
+    reportIncompatibleMethodOverride    = true
+    reportIncompatibleVariableOverride  = true
+    reportIncompleteStub                = true
+    reportInconsistentConstructor       = true
+    reportInconsistentOverload          = true
+    reportIndexIssue                    = true
+    reportInvalidStringEscapeSequence   = true
+    reportInvalidStubStatement          = true
+    reportInvalidTypeArguments          = true
+    reportInvalidTypeForm               = true
+    reportInvalidTypeVarUse             = true
+    reportMatchNotExhaustive            = true
+    reportMissingImports                = true
+    reportMissingModuleSource           = true
+    reportMissingParameterType          = true
+    # Ordinary classes and structural Protocol implementations do not need object.__init__ calls.
+    reportMissingSuperCall              = false
+    reportMissingTypeArgument           = true
+    reportMissingTypeStubs              = "error"
+    reportNoOverloadImplementation      = true
+    reportOperatorIssue                 = true
+    reportOptionalCall                  = true
+    reportOptionalContextManager        = true
+    reportOptionalIterable              = true
+    reportOptionalMemberAccess          = true
+    reportOptionalOperand               = true
+    reportOptionalSubscript             = true
+    reportOverlappingOverload           = true
+    reportPossiblyUnboundVariable       = true
+    reportPrivateImportUsage            = true
+    reportPrivateUsage                  = true
+    reportPropertyTypeMismatch          = true
+    reportRedeclaration                 = true
+    reportReturnType                    = true
+    reportSelfClsParameterName          = true
+    reportTypeCommentUsage              = true
+    reportTypedDictNotRequiredAccess    = true
+    reportUnboundVariable               = true
+    reportUnhashable                    = true
+    # Tk widgets are initialized synchronously by _build_widgets during app construction.
+    reportUninitializedInstanceVariable = false
+    reportUnknownArgumentType           = "error"
+    reportUnknownLambdaType             = "error"
+    reportUnknownMemberType             = "error"
+    reportUnknownParameterType          = "error"
+    reportUnknownVariableType           = "error"
+    reportUnnecessaryCast               = true
+    reportUnnecessaryComparison         = true
+    reportUnnecessaryContains           = true
+    reportUnnecessaryIsInstance         = true
+    reportUnnecessaryTypeIgnoreComment  = true
+    reportUnreachable                   = true
+    reportUnsupportedDunderAll          = true
+    reportUntypedBaseClass              = true
+    reportUntypedClassDecorator         = true
+    reportUntypedFunctionDecorator      = true
+    reportUntypedNamedTuple             = true
+    reportUnusedCallResult              = true
+    reportUnusedClass                   = true
+    reportUnusedCoroutine               = true
+    reportUnusedExcept                  = true
+    reportUnusedExpression              = true
+    reportUnusedFunction                = true
+    reportUnusedImport                  = true
+    reportUnusedVariable                = true
+    reportWildcardImportFromLibrary     = true
+    strictDictionaryInference           = true
+    strictListInference                 = true
+    strictParameterNoneValue            = true
+    strictSetInference                  = true
+    typeCheckingMode                    = "strict"
+    useLibraryCodeForTypes              = true
 
 [tool.pytest.ini_options]
-addopts = [
-    "--basetemp=.cache/pytest-temp",
-    "--strict-config",
-    "--strict-markers",
-    "--import-mode=importlib",
-]
-cache_dir = ".cache/.pytest_cache"
-filterwarnings = ["error"]
-junit_duration_report = "call"
-junit_family = "xunit2"
-junit_logging = "log"
-junit_log_passing_tests = true
-junit_suite_name = "radio-battery-monitor"
-strict = true
-strict_config = true
-strict_markers = true
-strict_parametrization_ids = true
-strict_xfail = true
-testpaths = ["tests"]
+    addopts                    = [
+        "--basetemp=.cache/pytest-temp",
+        "-p",
+        "no:xonsh",
+        "--strict-config",
+        "--strict-markers",
+        "--import-mode=importlib",
+        "--cov",
+        "--cov-report=term-missing",
+        "--cov-report=xml",
+        "--junitxml=coverage/python/junit.xml",
+    ]
+    cache_dir                  = ".cache/.pytest_cache"
+    collect_imported_tests     = false
+    console_output_style       = "progress"
+    doctest_encoding           = "utf-8"
+    empty_parameter_set_mark   = "fail_at_collect"
+    filterwarnings             = [ "error" ]
+    junit_duration_report      = "call"
+    junit_family               = "xunit2"
+    junit_log_passing_tests    = true
+    junit_logging              = "log"
+    junit_suite_name           = "radio-battery-monitor"
+    minversion                 = "9.1.1"
+    norecursedirs              = [
+        ".*",
+        "__pycache__",
+        "__pypackages__",
+        "build",
+        "coverage",
+        "dist",
+        "env",
+        "htmlcov",
+        "node_modules",
+        "site-packages",
+        "third_party",
+        "tmp",
+        "vendor",
+        "venv",
+    ]
+    pythonpath                 = [ "src" ]
+    required_plugins           = [ "pytest-cov==7.1.0" ]
+    strict                     = true
+    strict_config              = true
+    strict_markers             = true
+    strict_parametrization_ids = true
+    strict_xfail               = true
+    testpaths                  = [ "tests" ]
+    max_warnings               = 0
+
+[tool.ruff]
+    cache-dir         = ".cache/.ruff_cache"
+    extend-exclude    = [
+        ".bzr",
+        ".cache",
+        ".git",
+        ".hg",
+        ".mypy_cache",
+        ".nox",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".svn",
+        ".tox",
+        ".venv",
+        "__pycache__",
+        "__pypackages__",
+        "build",
+        "coverage",
+        "dist",
+        "env",
+        "htmlcov",
+        "node_modules",
+        "site-packages",
+        "third_party",
+        "tmp",
+        "typings",
+        "vendor",
+        "venv",
+    ]
+    force-exclude     = true
+    indent-width      = 4
+    line-length       = 120
+    required-version  = ">=0.16.5"
+    respect-gitignore = true
+    show-fixes        = true
+    src               = [ "src", "tests" ]
+    target-version    = "py312"
+
+    [tool.ruff.analyze]
+        detect-string-imports = true
+        direction             = "dependencies"
+        type-checking-imports = true
+
+    [tool.ruff.format]
+        docstring-code-format = true
+        line-ending           = "lf"
+        quote-style           = "double"
+
+    [tool.ruff.lint]
+        fixable   = [ "ALL" ]
+        ignore    = [
+            "COM812",                                         # Conflicts with the formatter.
+            "CPY001",                                         # Copyright ownership and notice text are project-specific.
+            "D203",                                           # Incompatible with D211.
+            "D213",                                           # Incompatible with D212.
+            "EM101",                                          # CLI errors are clearer inline at the call site.
+            "EM102",                                          # CLI errors are clearer inline at the call site.
+            "ISC001",                                         # Conflicts with the formatter.
+            "TRY003",                                         # CLI errors are clearer inline at the call site.
+        ]
+        preview   = true
+        select    = [ "ALL" ]
+        task-tags = [ "TODO", "FIXME", "XXX", "HACK", "BUG" ]
+        unfixable = [
+            "ERA",                                            # Do not delete commented context automatically.
+            "F401",                                           # Keep import removal explicit in review.
+        ]
+
+        [tool.ruff.lint.flake8-bandit]
+            check-typed-exception = true
+
+        [tool.ruff.lint.flake8-type-checking]
+            strict = true
+
+        [tool.ruff.lint.per-file-ignores]
+            "src/radio_battery_monitor/backends/ant.py" = [
+                "PLR6301",                                  # probe must remain an instance method to satisfy RadioBackend.
+            ]
+            "src/radio_battery_monitor/backends/ble.py" = [
+                "PLR6301",                                  # probe must remain an instance method to satisfy RadioBackend.
+            ]
+            "tests/**/*.py"                             = [
+                "INP001",
+                "PLR6301",                                  # Protocol fakes preserve instance method signatures even when stateless.
+                "PLR2004",
+                "S101",                                     # pytest uses assert rewriting.
+            ]
+            "tests/test_backend_helpers.py"             = [
+                "SLF001",                                   # Focused white-box tests cover protocol-boundary helpers.
+            ]
+            "tests/test_ui_logic.py"                    = [
+                "SLF001",                                   # Headless tests exercise deterministic UI state helpers.
+            ]
+            "tests/test_ui_app.py"                      = [
+                "D101",                                     # Test doubles are intentionally lightweight.
+                "D102",                                     # Test-double methods mirror Tk's broad widget surface.
+                "D107",                                     # Test-double constructors only initialize recorded state.
+                "FBT001",                                   # Tk's iconphoto API takes a positional default flag.
+                "PLR0904",                                  # One generic widget double intentionally models the shared Tk surface.
+                "SLF001",                                   # Headless integration tests exercise application state transitions.
+            ]
+
+        [tool.ruff.lint.pycodestyle]
+            max-doc-length = 120
+
+        [tool.ruff.lint.pydocstyle]
+            convention = "google"

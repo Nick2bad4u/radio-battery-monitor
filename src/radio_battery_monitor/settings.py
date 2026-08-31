@@ -43,7 +43,11 @@ class AppSettings:
     show_unconfigured_devices: bool = True
 
     def __post_init__(self) -> None:
-        """Validate thresholds and stable logical identifiers."""
+        """Validate thresholds and stable logical identifiers.
+
+        Raises:
+            SettingsError: A threshold, device, or identity mapping is invalid.
+        """
         if self.refresh_seconds < MINIMUM_REFRESH_SECONDS:
             msg = "Refresh interval must be at least 30 seconds."
             raise SettingsError(msg)
@@ -78,7 +82,14 @@ class SettingsStore:
         self.path = path or default_settings_path()
 
     def load(self) -> AppSettings:
-        """Load settings, returning defaults when no document exists."""
+        """Load settings, returning defaults when no document exists.
+
+        Returns:
+            Validated persisted settings or the application defaults.
+
+        Raises:
+            SettingsError: The settings file cannot be read, decoded, or validated.
+        """
         if not self.path.exists():
             return AppSettings()
         try:
@@ -89,7 +100,11 @@ class SettingsStore:
         return _decode_settings(raw)
 
     def save(self, settings: AppSettings) -> None:
-        """Write settings through a sibling temporary file and atomic replace."""
+        """Write settings through a sibling temporary file and atomic replace.
+
+        Raises:
+            OSError: The destination directory or settings file cannot be written.
+        """
         self.path.parent.mkdir(parents=True, exist_ok=True)
         temporary_path = self.path.with_suffix(".tmp")
         payload = json.dumps(_encode_settings(settings), indent=2, sort_keys=True)
@@ -109,7 +124,14 @@ def add_or_link_identity(
     kind: str,
     logical_id: str,
 ) -> AppSettings:
-    """Add an identity to an existing logical device or create a new one."""
+    """Add an identity to an existing logical device or create a new one.
+
+    Returns:
+        A validated settings snapshot containing the requested mapping.
+
+    Raises:
+        SettingsError: The device alias or kind is empty.
+    """
     normalized_alias = alias.strip()
     normalized_kind = kind.strip()
     if not normalized_alias or not normalized_kind:
@@ -154,7 +176,11 @@ def add_or_link_identity(
 
 
 def remove_identity(settings: AppSettings, identity: DeviceIdentity) -> AppSettings:
-    """Remove one protocol identity and any logical device left empty."""
+    """Remove one protocol identity and any logical device left empty.
+
+    Returns:
+        A validated settings snapshot without the requested identity.
+    """
     devices: list[LogicalDevice] = []
     for device in settings.devices:
         identities = tuple(item for item in device.identities if item.key != identity.key)
@@ -223,7 +249,11 @@ def _decode_settings(raw: object) -> AppSettings:
 
 
 def _deduplicate_devices(devices: tuple[LogicalDevice, ...]) -> tuple[LogicalDevice, ...]:
-    """Migrate legacy duplicate identities, preserving the user's latest mapping."""
+    """Migrate legacy duplicate identities, preserving the user's latest mapping.
+
+    Returns:
+        Devices with each identity retained only in its latest mapping.
+    """
     seen: set[str] = set()
     normalized_reversed: list[LogicalDevice] = []
     for device in reversed(devices):

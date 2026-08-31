@@ -73,7 +73,11 @@ class AntBatteryPage:
     operating_time_seconds: int
 
     def as_reading(self) -> BatteryReading:
-        """Convert the protocol page to the shared observation type."""
+        """Convert the protocol page to the shared observation type.
+
+        Returns:
+            A normalized battery observation.
+        """
         return BatteryReading(
             source="ant:common-page-82",
             voltage=self.voltage,
@@ -128,7 +132,14 @@ class AntInitializationTimeoutError(AntException):
 
 
 def decode_battery_page(payload: bytes | bytearray | list[int]) -> AntBatteryPage:
-    """Decode ANT+ Common Data Page 82 without OpenANT's two-byte truncation bug."""
+    """Decode ANT+ Common Data Page 82 without OpenANT's two-byte truncation bug.
+
+    Returns:
+        The decoded battery-page fields.
+
+    Raises:
+        ValueError: The payload is too short or is not Common Data Page 82.
+    """
     if len(payload) < ANT_PAGE_LENGTH:
         msg = f"ANT battery page requires at least 8 bytes, received {len(payload)}."
         raise ValueError(msg)
@@ -190,7 +201,11 @@ class AntBackend:
         self._sink: EventSink | None = None
 
     def probe(self) -> AdapterStatus:
-        """Enumerate the exact ANT USB Stick 2 without claiming it."""
+        """Enumerate the exact ANT USB Stick 2 without claiming it.
+
+        Returns:
+            The current ANT adapter availability and driver state.
+        """
         backend = usb.backend.libusb0.get_backend()
         if backend is None:
             return AdapterStatus(
@@ -469,7 +484,13 @@ class _OpenAntTransport:
 
 
 def _configure_node(node: Node, stop_event: Event) -> None:
-    """Set the ANT+ network key without inheriting OpenANT's ten-second blocking wait."""
+    """Set the ANT+ network key without inheriting OpenANT's ten-second blocking wait.
+
+    Raises:
+        AntInitializationCancelledError: Shutdown was requested during initialization.
+        AntInitializationTimeoutError: OpenANT did not finish initialization in time.
+        RuntimeError: The third-party operation failed with an unexpected exception.
+    """
     result: Queue[Exception | None] = Queue(maxsize=1)
     configure_thread = Thread(
         target=_set_network_key,
@@ -503,7 +524,17 @@ def create_ant_node(
     attempts: int = ANT_OPEN_ATTEMPTS,
     retry_seconds: float = ANT_OPEN_RETRY_SECONDS,
 ) -> Node:
-    """Open an ANT node with bounded retries while Windows settles the USB handle."""
+    """Open an ANT node with bounded retries while Windows settles the USB handle.
+
+    Returns:
+        An initialized OpenANT node.
+
+    Raises:
+        ValueError: Fewer than one open attempt was requested.
+        AntInitializationCancelledError: Shutdown was requested between attempts.
+        usb.core.USBError: Every USB open attempt failed.
+        RuntimeError: The retry loop ended without returning or raising a USB error.
+    """
     if attempts < 1:
         msg = "ANT open attempts must be at least one."
         raise ValueError(msg)
@@ -523,7 +554,7 @@ def _set_network_key(node: Node, result: Queue[Exception | None]) -> None:
     """Run OpenANT's blocking network-key handshake and publish its outcome."""
     try:
         _ = node.set_network_key(0, ANTPLUS_NETWORK_KEY)
-    except Exception as error:  # noqa: BLE001 - third-party boundary returns several undocumented exception types.
+    except Exception as error:  # ruff: ignore[blind-except] - OpenANT exposes undocumented exception types.
         result.put(error)
     else:
         result.put(None)

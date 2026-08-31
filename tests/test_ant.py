@@ -83,7 +83,11 @@ class UnresponsiveTransport:
         stop_event: Event,
         refresh_event: Event,
     ) -> None:
-        """Fail before opening channels."""
+        """Fail before opening channels.
+
+        Raises:
+            AntException: Always, to model a busy ANT stick.
+        """
         del devices, on_discovery, on_reading, stop_event, refresh_event
         raise AntException
 
@@ -102,7 +106,11 @@ class CancelledTransport:
         stop_event: Event,
         refresh_event: Event,
     ) -> None:
-        """Surface the same cancellation exception as a stopped node open."""
+        """Surface the same cancellation exception as a stopped node open.
+
+        Raises:
+            AntInitializationCancelledError: Always, to model deliberate shutdown.
+        """
         del devices, on_discovery, on_reading, stop_event, refresh_event
         raise AntInitializationCancelledError
 

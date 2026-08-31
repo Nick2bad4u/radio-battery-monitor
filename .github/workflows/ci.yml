@@ -38,7 +38,7 @@ jobs:
             - name: "Set up uv and Python"
               uses: "astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d" # v10.0.1
               with:
-                  version: "0.12.2"
+                  version: "0.12.7"
                   python-version: "3.12"
                   enable-cache: true
                   cache-dependency-glob: "uv.lock"
@@ -48,6 +48,21 @@ jobs:
 
             - name: "Validate lockfile"
               run: "uv lock --check"
+
+            - name: "Validate project metadata"
+              run: "uv run validate-pyproject pyproject.toml"
+
+            - name: "Verify exported development requirements"
+              shell: "pwsh"
+              run: |
+                  uv export --frozen --only-group dev --no-emit-project --format requirements.txt --no-hashes --output-file requirements-dev.txt
+                  git diff --exit-code -- requirements-dev.txt
+                  if ($LASTEXITCODE -ne 0) {
+                      throw "requirements-dev.txt is stale. Regenerate it with the uv command in its header."
+                  }
+
+            - name: "Audit locked development dependencies"
+              run: "uv run pip-audit --requirement requirements-dev.txt --strict"
 
             - name: "Check formatting"
               run: "uv run ruff format --check src tests"

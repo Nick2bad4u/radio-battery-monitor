@@ -52,7 +52,7 @@ class RowState:
 
     @property
     def newest_reading(self) -> BatteryReading | None:
-        """Return the newest reading across radio identities."""
+        """The newest reading across radio identities."""
         return newest_reading(self.readings)
 
 
@@ -66,7 +66,11 @@ class AdapterCard:
 
 
 def format_battery(reading: BatteryReading | None, state: DeviceState, *, host_powered: bool = False) -> str:
-    """Format a truthful battery cell without deriving missing values."""
+    """Format a truthful battery cell without deriving missing values.
+
+    Returns:
+        A display value assembled only from reported battery information.
+    """
     if host_powered:
         return "N/A — host powered"
     if reading is None:
@@ -688,7 +692,7 @@ class RadioBatteryApp:
         self._device_count_text.set(f"{configured} configured  ·  {discovered} nearby")
 
     def _show_error(self, title: str, error: Exception) -> None:
-        self._logger.exception(title, exc_info=error)
+        self._logger.error(title, exc_info=error)
         _ = messagebox.showerror(title, str(error))
 
     def _on_close(self) -> None:

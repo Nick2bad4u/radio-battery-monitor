@@ -45,12 +45,12 @@ class BleDeviceLike(Protocol):
 
     @property
     def address(self) -> str:
-        """Return the Windows Bluetooth address."""
+        """The Windows Bluetooth address."""
         ...
 
     @property
     def name(self) -> str | None:
-        """Return the OS-provided display name, when available."""
+        """The OS-provided display name, when available."""
         ...
 
 
@@ -59,7 +59,7 @@ class BleScannerLike(Protocol):
 
     @property
     def discovered_devices(self) -> Sequence[BleDeviceLike]:
-        """Return devices observed during the current scan."""
+        """Devices observed during the current scan."""
         ...
 
     async def start(self) -> None:
@@ -92,7 +92,14 @@ type ClientFactory = Callable[[BleDeviceLike], BleClientLike]
 
 
 def parse_battery_level(payload: bytes | bytearray) -> int:
-    """Decode the one-octet Bluetooth Battery Level characteristic."""
+    """Decode the one-octet Bluetooth Battery Level characteristic.
+
+    Returns:
+        The reported battery percentage.
+
+    Raises:
+        ValueError: The payload is not exactly one byte or exceeds 100 percent.
+    """
     if len(payload) != 1:
         msg = f"Battery Level must contain exactly one byte, received {len(payload)}."
         raise ValueError(msg)
@@ -128,7 +135,11 @@ class BluetoothBackend:
         self._sink: EventSink | None = None
 
     def probe(self) -> AdapterStatus:
-        """Inspect Windows Bluetooth radio state without scanning."""
+        """Inspect Windows Bluetooth radio state without scanning.
+
+        Returns:
+            The current Windows Bluetooth adapter state.
+        """
         try:
             state = asyncio.run(_bluetooth_radio_state())
         except (OSError, RuntimeError) as error:
@@ -412,5 +423,9 @@ class _BleakClientAdapter:
         await self._client.disconnect()
 
     async def read_gatt_char(self, characteristic: str) -> bytearray:
-        """Read a characteristic by normalized UUID."""
+        """Read a characteristic by normalized UUID.
+
+        Returns:
+            The raw characteristic payload.
+        """
         return await self._client.read_gatt_char(characteristic)

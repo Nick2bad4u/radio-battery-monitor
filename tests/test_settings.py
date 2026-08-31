@@ -108,3 +108,76 @@ def test_legacy_ant_transmission_variants_collapse_to_latest_mapping(tmp_path: P
     settings = SettingsStore(path).load()
     assert len(settings.devices) == 1
     assert settings.devices[0].alias == "New"
+
+
+@pytest.mark.parametrize(
+    ("refresh_seconds", "low_percent", "critical_percent", "message"),
+    [
+        (29, 20, 10, "at least 30"),
+        (300, 101, 10, "thresholds"),
+    ],
+)
+def test_invalid_scalar_settings_are_rejected(
+    refresh_seconds: int,
+    low_percent: int,
+    critical_percent: int,
+    message: str,
+) -> None:
+    """Out-of-range persisted controls fail before hardware can use them."""
+    with pytest.raises(SettingsError, match=message):
+        _ = AppSettings(
+            refresh_seconds=refresh_seconds,
+            low_percent=low_percent,
+            critical_percent=critical_percent,
+        )
+
+
+def test_duplicate_logical_ids_and_identities_are_rejected() -> None:
+    """Logical IDs and physical identities remain globally unique."""
+    identity = DeviceIdentity(ProtocolName.BLUETOOTH_LE, "AA:BB")
+    first = LogicalDevice("same", "First", "sensor", (identity,))
+    second_id = LogicalDevice("same", "Second", "sensor", (DeviceIdentity(ProtocolName.ANT_PLUS, "1"),))
+    with pytest.raises(SettingsError, match="identifiers must be unique"):
+        _ = AppSettings(devices=(first, second_id))
+    duplicate_identity = LogicalDevice("other", "Other", "sensor", (identity,))
+    with pytest.raises(SettingsError, match="cannot be assigned"):
+        _ = AppSettings(devices=(first, duplicate_identity))
+
+
+def test_empty_device_and_mapping_labels_are_rejected() -> None:
+    """Unusable logical devices and blank labels never enter settings."""
+    with pytest.raises(SettingsError, match="at least one radio identity"):
+        _ = AppSettings(devices=(LogicalDevice("empty", "Empty", "sensor", ()),))
+    identity = DeviceIdentity(ProtocolName.BLUETOOTH_LE, "AA:BB")
+    with pytest.raises(SettingsError, match="cannot be empty"):
+        _ = add_or_link_identity(AppSettings(), identity=identity, alias=" ", kind="sensor", logical_id="new")
+
+
+@pytest.mark.parametrize(
+    ("document", "message"),
+    [
+        ("[]", "settings must be an object"),
+        ('{"schema_version":99,"devices":[]}', "Unsupported settings schema"),
+        ('{"schema_version":2,"devices":"bad"}', "devices must be an array"),
+        (
+            (
+                '{"schema_version":2,"refresh_seconds":300,"low_percent":20,"critical_percent":10,'
+                '"theme":"blue","devices":[]}'
+            ),
+            "Unsupported theme",
+        ),
+        (
+            (
+                '{"schema_version":2,"refresh_seconds":true,"low_percent":20,"critical_percent":10,'
+                '"theme":"dark","devices":[]}'
+            ),
+            "refresh_seconds must be an integer",
+        ),
+    ],
+)
+def test_malformed_settings_shapes_are_rejected(tmp_path: Path, document: str, message: str) -> None:
+    """Schema-shape errors produce targeted settings failures."""
+    path = tmp_path / "settings.json"
+    _ = path.write_text(document, encoding="utf-8")
+    with pytest.raises(SettingsError, match=message):
+        _ = SettingsStore(path).load()

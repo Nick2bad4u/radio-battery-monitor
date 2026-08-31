@@ -17,7 +17,11 @@ LOG_BACKUP_COUNT: Final = 3
 
 
 def configure_logging(log_directory: Path | None = None) -> logging.Logger:
-    """Configure one bounded application log and return its logger."""
+    """Configure one bounded application log.
+
+    Returns:
+        The configured application logger.
+    """
     logger = logging.getLogger(LOG_NAME)
     if logger.handlers:
         return logger

@@ -7,19 +7,26 @@
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.formatOnSave": true
   },
-  "mypy-type-checker.reportingScope": "workspace",
+  "mypy-type-checker.args": [
+    "--config-file",
+    "${workspaceFolder}/pyproject.toml"
+  ],
+  "mypy-type-checker.cwd": "${workspaceFolder}",
+  "mypy-type-checker.importStrategy": "fromEnvironment",
   "python.analysis.diagnosticMode": "workspace",
-  "python.analysis.extraPaths": ["${workspaceFolder}/src", "${workspaceFolder}/typings"],
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/src",
+    "${workspaceFolder}/typings"
+  ],
   "python.analysis.typeCheckingMode": "strict",
-  "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
+  "python.terminal.activateEnvironment": true,
+  "python.testing.cwd": "${workspaceFolder}",
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": false,
-  "ruff.configurationPreference": "filesystemFirst",
-  "ruff.fixAll": true,
-  "ruff.format.backend": "internal",
-  "ruff.importStrategy": "fromEnvironment",
-  "ruff.lint.enable": true,
-  "ruff.nativeServer": "auto",
-  "ruff.organizeImports": true
+  "ruff.configuration": "${workspaceFolder}/pyproject.toml",
+  "ruff.importStrategy": "fromEnvironment"
 }
-
