@@ -114,7 +114,7 @@ typing-extensions==4.16.0
     #   cyclonedx-python-lib
     #   mypy
     #   pyright
-urllib3==2.7.0
+urllib3==2.8.0
     # via requests
 validate-pyproject==0.26
     # via validate-pyproject-schema-store
